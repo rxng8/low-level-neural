@@ -124,9 +124,78 @@ params['b0'] -= learning_rate * db0
 
 # Evaluate 
 
+# # Forward to hidden layer and ouut layer
+# A_hidden, Z_hidden = forward(inputs, params['W0'], params['b0'])  # 2 x 1
+
+# # A_hidden
+# A_out2, Z_out = forward(A_hidden, params['W1'], params['b1'], activation="sigmoid") # 3 x 1
+# A_out2
+
+# %%
+
+inputs = np.array([[1.0], [2.0], [3.0]])  # 3 x 1
+outputs = np.array([[1.0], [0], [0]]) # 3 x 1
+
+losses = []
+
 # Forward to hidden layer and ouut layer
 A_hidden, Z_hidden = forward(inputs, params['W0'], params['b0'])  # 2 x 1
-
-# A_hidden
 A_out, Z_out = forward(A_hidden, params['W1'], params['b1'], activation="sigmoid") # 3 x 1
+
+# Loss computation
+loss = loss_func(outputs, A_out)
+
+# d_loss
+dA_out = - (np.divide(outputs, A_out) - np.divide(1 - outputs, 1 - A_out))
+
+# Backprop
+dA_hidden, dW1, db1 = backward(
+  dA_out, 
+  params['W1'], params['b1'], Z_out, A_hidden
+)
+
+dA_in, dW0, db0 = backward(
+  dA_hidden, 
+  params['W0'], params['b0'], Z_hidden, inputs
+)
+
+# Update weights
+params['W1'] -= learning_rate * dW1
+params['b1'] -= learning_rate * db1
+params['W0'] -= learning_rate * dW0
+params['b0'] -= learning_rate * db0
+
 A_out
+
+# %%
+
+# Forward to hidden layer and ouut layer
+A_hidden, Z_hidden = forward(inputs, params['W0'], params['b0'])  # 2 x 1
+A_out2, Z_out = forward(A_hidden, params['W1'], params['b1'], activation="sigmoid") # 3 x 1
+A_out2
+# %%
+
+
+# check finite difference
+# Q(z, w + delta*e_i) ≈ ( Q(z, w) + delta * g_i )
+difference_y1 = learning_rate * (A_out2 - A_out)
+
+# Update weights
+params['W1'] = learning_rate * dW1
+params['b1'] = learning_rate * db1
+params['W0'] = learning_rate * dW0
+params['b0'] = learning_rate * db0
+
+# Forward to hidden layer and ouut layer
+A_hidden, Z_hidden = forward(inputs, params['W0'], params['b0'])  # 2 x 1
+difference_y2, Z_out = forward(A_hidden, params['W1'], params['b1'], activation="sigmoid") # 3 x 1
+
+
+# %%
+
+print(difference_y1)
+print(difference_y2)
+
+
+
+
